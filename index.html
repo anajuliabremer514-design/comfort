@@ -368,6 +368,56 @@
   #ideaInput::placeholder{ color: var(--ink-mute); }
   #ideaInput:focus{ outline: none; }
 
+  /* ===== MÚSICA (estilo Spotify) ===== */
+  .music-header{ margin-bottom: 28px; }
+  .music-header h2{ margin:4px 0 0; font-size:26px; font-weight:700; letter-spacing:-0.02em; }
+
+  .music-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+  }
+  .music-card{
+    background: #121212;
+    border-radius: var(--radius-md);
+    padding: 14px;
+    cursor: pointer;
+    transition: background .2s var(--ease), transform .2s var(--ease);
+    position: relative;
+  }
+  .music-card:hover{ background: #1c1c1e; transform: translateY(-3px); }
+  .music-cover{
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  }
+  .music-title{ color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+  .music-artist{ color: #a7a7a7; font-size: 12.5px; font-weight: 500; }
+  .music-card.selected{ outline: 2px solid var(--accent); }
+  .music-check{
+    position: absolute; top: 10px; right: 10px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; opacity: 0; transition: opacity .2s;
+  }
+  .music-card.selected .music-check{ opacity: 1; }
+
+  .widget.music-widget{ background: #121212; color: #fff; }
+  .widget.music-widget .label{ color: #a7a7a7; }
+  .music-widget-inner{ display: flex; align-items: center; gap: 12px; height: 100%; }
+  .music-widget-cover{
+    width: 46px; height: 46px; border-radius: 8px; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .music-widget-info{ min-width: 0; }
+  .music-widget-title{ color: #fff; font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .music-widget-artist{ color: #a7a7a7; font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   @media (max-width: 480px){
     h1{ font-size: 32px; }
     .app{ padding: 48px 18px 100px; }
@@ -390,6 +440,7 @@
     <button id="tabList">Lições</button>
     <button id="tabWrite">Escrever</button>
     <button id="tabIdeas"> Ideias</button>
+    <button id="tabMusic">🎵 Música</button>
   </div>
 
   <div id="viewHome" class="view active">
@@ -442,6 +493,15 @@
       <input type="text" id="ideaInput" placeholder="Nova ideia..." autocomplete="off" />
     </form>
   </div>
+
+  <div id="viewMusic" class="view">
+    <div class="music-header">
+      <span class="eyebrow">TRILHA SONORA</span>
+      <h2>Escolha sua música do dia</h2>
+      <p class="sub">Selecione uma faixa para representar o seu dia.</p>
+    </div>
+    <div class="music-grid" id="musicGrid"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast">Lição guardada.</div>
@@ -453,10 +513,12 @@
   const tabList = document.getElementById('tabList');
   const tabWrite = document.getElementById('tabWrite');
   const tabIdeas = document.getElementById('tabIdeas');
+  const tabMusic = document.getElementById('tabMusic');
   const viewHome = document.getElementById('viewHome');
   const viewList = document.getElementById('viewList');
   const viewWrite = document.getElementById('viewWrite');
   const viewIdeas = document.getElementById('viewIdeas');
+  const viewMusic = document.getElementById('viewMusic');
   const lessonsList = document.getElementById('lessonsList');
   const emptyState = document.getElementById('emptyState');
   const lessonInput = document.getElementById('lessonInput');
@@ -466,11 +528,13 @@
   const cancelBtn = document.getElementById('cancelBtn');
   const toast = document.getElementById('toast');
   const widgetGrid = document.getElementById('widgetGrid');
+  const musicGrid = document.getElementById('musicGrid');
 
   /* ====== ESTADO ====== */
   let lessons = [];
   let ideas = [];
   let widgetOrder = null;
+  let songOfDay = null;
 
   function showToast(msg){
     toast.textContent = msg;
@@ -478,8 +542,30 @@
     setTimeout(()=> toast.classList.remove('show'), 1800);
   }
 
+  /* ====== CATÁLOGO DE MÚSICAS ====== */
+  const songCatalog = [
+    { id:'s1', title:'Bohemian Rhapsody', artist:'Queen', grad:'linear-gradient(135deg,#f7971e,#ffd200)', icon:'🎸' },
+    { id:'s2', title:'Blinding Lights', artist:'The Weeknd', grad:'linear-gradient(135deg,#ff416c,#ff4b2b)', icon:'🌃' },
+    { id:'s3', title:'Someone Like You', artist:'Adele', grad:'linear-gradient(135deg,#667eea,#764ba2)', icon:'🎹' },
+    { id:'s4', title:'Billie Jean', artist:'Michael Jackson', grad:'linear-gradient(135deg,#000000,#434343)', icon:'✨' },
+    { id:'s5', title:'Shape of You', artist:'Ed Sheeran', grad:'linear-gradient(135deg,#11998e,#38ef7d)', icon:'🎧' },
+    { id:'s6', title:'Rolling in the Deep', artist:'Adele', grad:'linear-gradient(135deg,#8e2de2,#4a00e0)', icon:'🌊' },
+    { id:'s7', title:'Levitating', artist:'Dua Lipa', grad:'linear-gradient(135deg,#f953c6,#b91d73)', icon:'🚀' },
+    { id:'s8', title:'Yesterday', artist:'The Beatles', grad:'linear-gradient(135deg,#c9d6ff,#e2e2e2)', icon:'🎼' },
+    { id:'s9', title:'Get Lucky', artist:'Daft Punk', grad:'linear-gradient(135deg,#f7b733,#fc4a1a)', icon:'🕺' },
+    { id:'s10', title:'Fix You', artist:'Coldplay', grad:'linear-gradient(135deg,#2193b0,#6dd5ed)', icon:'💙' },
+    { id:'s11', title:'Watermelon Sugar', artist:'Harry Styles', grad:'linear-gradient(135deg,#ff9a9e,#fecfef)', icon:'🍉' },
+    { id:'s12', title:'Stairway to Heaven', artist:'Led Zeppelin', grad:'linear-gradient(135deg,#0f2027,#2c5364)', icon:'🪜' }
+  ];
+
   /* ====== NAVEGAÇÃO ENTRE ABAS ====== */
-  const tabs = { home: [tabHome, viewHome], list: [tabList, viewList], write: [tabWrite, viewWrite], ideas: [tabIdeas, viewIdeas] };
+  const tabs = {
+    home: [tabHome, viewHome],
+    list: [tabList, viewList],
+    write: [tabWrite, viewWrite],
+    ideas: [tabIdeas, viewIdeas],
+    music: [tabMusic, viewMusic]
+  };
 
   function switchTab(which){
     Object.values(tabs).forEach(([btn, view]) => { btn.classList.remove('active'); view.classList.remove('active'); });
@@ -490,6 +576,7 @@
     if(which === 'list') render();
     if(which === 'home') renderDashboard();
     if(which === 'ideas') renderIdeas();
+    if(which === 'music') renderMusicGrid();
     if(which === 'write'){
       lessonInput.value = '';
       commentInput.value = '';
@@ -503,6 +590,7 @@
   tabList.addEventListener('click', ()=> switchTab('list'));
   tabWrite.addEventListener('click', ()=> switchTab('write'));
   tabIdeas.addEventListener('click', ()=> switchTab('ideas'));
+  tabMusic.addEventListener('click', ()=> switchTab('music'));
   cancelBtn.addEventListener('click', ()=> switchTab('list'));
 
   lessonInput.addEventListener('input', ()=>{
@@ -565,6 +653,7 @@
     { id: 'contador', render: renderCounterWidget },
     { id: 'escrever', render: renderNewBtnWidget },
     { id: 'aleatoria', render: renderRandomWidget },
+    { id: 'musica', render: renderMusicWidget },
   ];
 
   const defaultLayout = {
@@ -574,6 +663,7 @@
     ideasw:    { x: 0,   y: 126, w: 334, h: 112, color: 'white' },
     escrever:  { x: 522, y: 126, w: 160, h: 112, color: 'white' },
     aleatoria: { x: 348, y: 252, w: 334, h: 112, color: 'white' },
+    musica:    { x: 0,   y: 252, w: 334, h: 112, color: 'white' },
   };
 
   let widgetLayout = null;
@@ -602,6 +692,20 @@
     const r = lessons.length ? lessons[Math.floor(Math.random() * lessons.length)] : null;
     return `<div class="label">Você escreveu isso antes...</div><div class="quote">${r ? escapeHtml(r.text) : 'Sem lições ainda'}</div>`;
   }
+  function renderMusicWidget(){
+    if(!songOfDay){
+      return `<div class="label">Música do dia</div><div class="quote">Escolha uma faixa →</div>`;
+    }
+    return `
+      <div class="music-widget-inner">
+        <div class="music-widget-cover" style="background:${songOfDay.grad}">${songOfDay.icon}</div>
+        <div class="music-widget-info">
+          <div class="music-widget-title">${escapeHtml(songOfDay.title)}</div>
+          <div class="music-widget-artist">${escapeHtml(songOfDay.artist)}</div>
+        </div>
+      </div>
+    `;
+  }
 
   function getLayout(){
     return widgetLayout || JSON.parse(JSON.stringify(defaultLayout));
@@ -621,6 +725,7 @@
       const pos = layout[def.id] || defaultLayout[def.id];
       const div = document.createElement('div');
       div.className = `widget`;
+      if(def.id === 'musica') div.classList.add('music-widget');
       div.dataset.id = def.id;
       div.dataset.color = pos.color || 'white';
       div.style.left = pos.x + 'px';
@@ -645,6 +750,7 @@
         if(wasDragged) { wasDragged = false; return; }
         if(def.id === 'ideasw') switchTab('ideas');
         if(def.id === 'escrever') switchTab('write');
+        if(def.id === 'musica') switchTab('music');
       });
 
       makeDraggable(div, def.id);
@@ -822,6 +928,32 @@
     input.value = '';
   });
 
+  /* ====== VIEW "MÚSICA" ====== */
+  function renderMusicGrid(){
+    musicGrid.innerHTML = '';
+    songCatalog.forEach(song => {
+      const card = document.createElement('div');
+      card.className = 'music-card' + (songOfDay && songOfDay.id === song.id ? ' selected' : '');
+      card.innerHTML = `
+        <div class="music-check">✓</div>
+        <div class="music-cover" style="background:${song.grad}">${song.icon}</div>
+        <div class="music-title"></div>
+        <div class="music-artist"></div>
+      `;
+      card.querySelector('.music-title').textContent = song.title;
+      card.querySelector('.music-artist').textContent = song.artist;
+      card.addEventListener('click', () => selectSong(song));
+      musicGrid.appendChild(card);
+    });
+  }
+
+  async function selectSong(song){
+    songOfDay = song;
+    await persistSong();
+    renderMusicGrid();
+    showToast('Música do dia definida: ' + song.title);
+  }
+
   /* ====== PERSISTÊNCIA (localStorage) ====== */
   async function loadLessons(){
     try{
@@ -891,6 +1023,24 @@
     }
   }
 
+  async function loadSong(){
+    try{
+      const raw = localStorage.getItem('licoes:song-of-day');
+      songOfDay = raw ? JSON.parse(raw) : null;
+    }catch(e){
+      songOfDay = null;
+    }
+  }
+
+  async function persistSong(){
+    try{
+      localStorage.setItem('licoes:song-of-day', JSON.stringify(songOfDay));
+    }catch(e){
+      console.error('Falha ao salvar música', e);
+    }
+    renderDashboard();
+  }
+
   /* ====== AÇÕES: LIÇÕES ====== */
   async function saveLesson(){
     const text = lessonInput.value.trim();
@@ -920,7 +1070,7 @@
 
   /* ====== INICIALIZAÇÃO ====== */
   (async function init(){
-    await Promise.all([loadLessons(), loadOrder(), loadIdeas(), loadLayout()]);
+    await Promise.all([loadLessons(), loadOrder(), loadIdeas(), loadLayout(), loadSong()]);
     renderDashboard();
   })();
 })();

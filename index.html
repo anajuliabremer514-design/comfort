@@ -92,7 +92,7 @@
   transition: box-shadow .18s var(--ease), transform .12s var(--ease);
   display:flex; flex-direction: column; justify-content: center; overflow: hidden;
   user-select: none;
-  touch-action: none; /* necessário para drag funcionar bem no touch */
+  touch-action: none;
 }
 .widget.dragging{ box-shadow: var(--shadow-float); transform: scale(1.02); z-index: 20; cursor: grabbing; }
 .widget:hover{ box-shadow: var(--shadow-float); }
@@ -110,7 +110,6 @@
 .widget:hover .glyph-sm{ background: var(--accent-soft); color: var(--accent); }
 .widget .quote{ font-size: 14.5px; line-height: 1.4; font-weight: 600; color: var(--ink); }
 
-/* variações de cor (estilo etiquetas Trello) */
 .widget[data-color="blue"]{ background: rgba(10,132,255,0.12); }
 .widget[data-color="orange"]{ background: rgba(255,149,0,0.14); }
 .widget[data-color="pink"]{ background: rgba(255,45,85,0.12); }
@@ -119,7 +118,6 @@
 .widget[data-color="dark"] .quote,
 .widget[data-color="dark"] .big{ color: #f5f5f7; }
 
-/* botão de paleta no canto do widget */
 .widget-palette-btn{
   position: absolute; top: 8px; right: 8px;
   width: 22px; height: 22px; border-radius: 50%;
@@ -151,7 +149,6 @@
 .palette-dot[data-c="pink"]{ background:#ff2d55; }
 .palette-dot[data-c="dark"]{ background:#1c1c1e; }
 
-/* No mobile, volta pro empilhado normal (mais fácil de usar) */
 @media (max-width: 560px){
   .grid{ display:flex; flex-direction:column; gap: 14px; min-height: auto; background: none; }
   .widget{ position: static !important; width: 100% !important; height: auto !important; min-height: 100px; }
@@ -263,7 +260,6 @@
   }
   .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 
-  /* ===== ABA "IDEIAS" — CHECKLIST ESTILO NOTAS DO IPHONE ===== */
   .ideas-header{ margin-bottom: 28px; }
   .ideas-header .sub{ margin-top: 6px; }
 
@@ -396,12 +392,10 @@
     <button id="tabIdeas"> Ideias</button>
   </div>
 
-  <!-- ===== VIEW 1: INÍCIO ===== -->
   <div id="viewHome" class="view active">
     <div class="grid" id="widgetGrid"></div>
   </div>
 
-  <!-- ===== VIEW 2: LISTA DE LIÇÕES ===== -->
   <div id="viewList" class="view">
     <div id="emptyState" class="empty" style="display:none;">
       <div class="glyph">＋</div>
@@ -411,7 +405,6 @@
     <div id="lessonsList" class="lessons"></div>
   </div>
 
-  <!-- ===== VIEW 3: ESCREVER ===== -->
   <div id="viewWrite" class="view">
     <div class="form-card">
       <label for="lessonInput">Lição principal</label>
@@ -430,7 +423,6 @@
     </div>
   </div>
 
-  <!-- ===== VIEW 4: IDEIAS — CHECKLIST ===== -->
   <div id="viewIdeas" class="view">
     <div class="ideas-header">
       <span class="eyebrow">RASCUNHOS</span>
@@ -452,7 +444,6 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast">Lição guardada.</div>
 
 <script>
@@ -478,10 +469,8 @@
 
   /* ====== ESTADO ====== */
   let lessons = [];
-  let ideas = []; // { id, text, done, createdAt }
+  let ideas = [];
   let widgetOrder = null;
-  let memoryFallback = [];
-  const hasStorage = !!(window.storage && window.storage.get);
 
   function showToast(msg){
     toast.textContent = msg;
@@ -568,7 +557,7 @@
     });
   }
 
-    /* ====== VIEW "INÍCIO" — DASHBOARD LIVRE ====== */
+  /* ====== VIEW "INÍCIO" — DASHBOARD LIVRE ====== */
   const widgetDefs = [
     { id: 'hoje', render: renderDateWidget },
     { id: 'ultima', render: renderLastWidget },
@@ -578,7 +567,6 @@
     { id: 'aleatoria', render: renderRandomWidget },
   ];
 
-  // posição/tamanho padrão de cada widget (px), dentro da área de 704px de largura
   const defaultLayout = {
     hoje:      { x: 0,   y: 0,   w: 160, h: 112, color: 'white' },
     ultima:    { x: 174, y: 0,   w: 334, h: 238, color: 'white' },
@@ -588,7 +576,7 @@
     aleatoria: { x: 348, y: 252, w: 334, h: 112, color: 'white' },
   };
 
-  let widgetLayout = null; // carregado do storage; se null, usa defaultLayout
+  let widgetLayout = null;
 
   function renderDateWidget(){
     const raw = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
@@ -619,7 +607,7 @@
     return widgetLayout || JSON.parse(JSON.stringify(defaultLayout));
   }
 
-  let activePalette = null; // popover de cor aberto no momento
+  let activePalette = null;
 
   function closePalette(){
     if(activePalette){ activePalette.remove(); activePalette = null; }
@@ -632,7 +620,7 @@
     widgetDefs.forEach(def => {
       const pos = layout[def.id] || defaultLayout[def.id];
       const div = document.createElement('div');
-      div.className = `widget${def.id === 'contador' ? '' : ''}`;
+      div.className = `widget`;
       div.dataset.id = def.id;
       div.dataset.color = pos.color || 'white';
       div.style.left = pos.x + 'px';
@@ -641,7 +629,6 @@
       div.style.height = pos.h + 'px';
       div.innerHTML = def.render();
 
-      // botão de paleta de cor
       const paletteBtn = document.createElement('button');
       paletteBtn.className = 'widget-palette-btn';
       paletteBtn.textContent = '🎨';
@@ -653,7 +640,6 @@
         openPalette(div, def.id);
       });
 
-      // clique nos widgets de atalho
       div.addEventListener('click', (e) => {
         if(e.target === paletteBtn) return;
         if(wasDragged) { wasDragged = false; return; }
@@ -729,7 +715,6 @@
       const container = widgetGrid.getBoundingClientRect();
       let newX = origX + dx;
       let newY = origY + dy;
-      // limita dentro da área do mural
       newX = Math.max(0, Math.min(newX, container.width - el.offsetWidth));
       newY = Math.max(0, newY);
       el.style.left = newX + 'px';
@@ -758,26 +743,6 @@
     el.addEventListener('mousedown', onDown);
     el.addEventListener('touchstart', onDown, { passive: true });
   }
-
-  async function loadLayout(){
-    if(!hasStorage) return;
-    try{
-      const result = await window.storage.get('licoes:widget-layout', false);
-      widgetLayout = result && result.value ? JSON.parse(result.value) : null;
-    }catch(e){
-      widgetLayout = null;
-    }
-  }
-
-  async function persistLayout(layout){
-    if(!hasStorage) return;
-    try{
-      await window.storage.set('licoes:widget-layout', JSON.stringify(layout), false);
-    }catch(e){
-      console.error('Falha ao salvar layout', e);
-    }
-  }
-
 
   /* ====== VIEW "IDEIAS" — CHECKLIST ====== */
   function renderIdeas(){
@@ -857,67 +822,70 @@
     input.value = '';
   });
 
-  /* ====== PERSISTÊNCIA ====== */
+  /* ====== PERSISTÊNCIA (localStorage) ====== */
   async function loadLessons(){
-    if(hasStorage){
-      try{
-        const result = await window.storage.get('licoes:list', false);
-        lessons = result && result.value ? JSON.parse(result.value) : [];
-      }catch(e){
-        lessons = [];
-      }
-    } else {
-      lessons = memoryFallback;
+    try{
+      const raw = localStorage.getItem('licoes:list');
+      lessons = raw ? JSON.parse(raw) : [];
+    }catch(e){
+      lessons = [];
     }
   }
 
   async function persist(){
-    if(hasStorage){
-      try{
-        await window.storage.set('licoes:list', JSON.stringify(lessons), false);
-      }catch(e){
-        console.error('Falha ao salvar', e);
-      }
-    } else {
-      memoryFallback = lessons;
+    try{
+      localStorage.setItem('licoes:list', JSON.stringify(lessons));
+    }catch(e){
+      console.error('Falha ao salvar', e);
     }
   }
 
   async function loadIdeas(){
-    if(hasStorage){
-      try{
-        const result = await window.storage.get('licoes:ideas', false);
-        ideas = result && result.value ? JSON.parse(result.value) : [];
-      }catch(e){
-        ideas = [];
-      }
+    try{
+      const raw = localStorage.getItem('licoes:ideas');
+      ideas = raw ? JSON.parse(raw) : [];
+    }catch(e){
+      ideas = [];
     }
   }
 
   async function persistIdeas(){
-    if(hasStorage){
-      try{
-        await window.storage.set('licoes:ideas', JSON.stringify(ideas), false);
-      }catch(e){
-        console.error('Falha ao salvar ideias', e);
-      }
+    try{
+      localStorage.setItem('licoes:ideas', JSON.stringify(ideas));
+    }catch(e){
+      console.error('Falha ao salvar ideias', e);
+    }
+  }
+
+  async function loadLayout(){
+    try{
+      const raw = localStorage.getItem('licoes:widget-layout');
+      widgetLayout = raw ? JSON.parse(raw) : null;
+    }catch(e){
+      widgetLayout = null;
+    }
+  }
+
+  async function persistLayout(layout){
+    try{
+      localStorage.setItem('licoes:widget-layout', JSON.stringify(layout));
+    }catch(e){
+      console.error('Falha ao salvar layout', e);
     }
   }
 
   async function loadOrder(){
-    if(!hasStorage) return;
     try{
-      const result = await window.storage.get('licoes:widget-order', false);
-      widgetOrder = result && result.value ? JSON.parse(result.value) : null;
+      const raw = localStorage.getItem('licoes:widget-order');
+      widgetOrder = raw ? JSON.parse(raw) : null;
     }catch(e){
       widgetOrder = null;
     }
   }
 
   async function persistOrder(order){
-    if(!hasStorage) return;
     try{
-      await window.storage.set('licoes:widget-order', JSON.stringify(order), false);
+      localStorage.setItem('licoes:widget-order', JSON.stringify(order));
     }catch(e){
       console.error('Falha ao salvar ordem', e);
     }
@@ -952,7 +920,7 @@
 
   /* ====== INICIALIZAÇÃO ====== */
   (async function init(){
-    await Promise.all([loadLessons(), loadOrder(), loadIdeas()]);
+    await Promise.all([loadLessons(), loadOrder(), loadIdeas(), loadLayout()]);
     renderDashboard();
   })();
 })();

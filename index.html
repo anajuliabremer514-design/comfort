@@ -17,6 +17,14 @@
     --ink-mute: #9a9a9a;
     --accent: #0a84ff;
     --accent-soft: rgba(10,132,255,0.10);
+
+    --c-blue:#0a84ff;
+    --c-purple:#af52de;
+    --c-green:#34c759;
+    --c-orange:#ff9500;
+    --c-pink:#ff2d55;
+    --c-dark:#1c1c1e;
+
     --radius-lg: 32px;
     --radius-md: 24px;
     --radius-sm: 18px;
@@ -64,8 +72,17 @@
   .segmented button.active{ background: var(--white); color: var(--ink); box-shadow: var(--shadow-soft); }
   .segmented button:hover{ color: var(--ink); }
 
+  .segmented.sub{
+    margin: 0 0 28px;
+    background: var(--gray-1);
+  }
+  .segmented.sub button{ font-size: 13px; padding: 10px 12px; }
+
   .view{ display:none; }
   .view.active{ display:block; animation: rise .38s var(--ease); }
+
+  .subview{ display:none; }
+  .subview.active{ display:block; animation: rise .3s var(--ease); }
 
   @keyframes rise{
     from{ opacity:0; transform: translateY(8px) scale(.99); filter: blur(2px); }
@@ -97,9 +114,8 @@
 .widget.dragging{ box-shadow: var(--shadow-float); transform: scale(1.02); z-index: 20; cursor: grabbing; }
 .widget:hover{ box-shadow: var(--shadow-float); }
 
-.widget.counter{ background: var(--accent-soft); }
-.widget .label{ font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-mute); margin-bottom: 6px; }
-.widget .big{ font-size: 34px; font-weight: 800; letter-spacing: -0.02em; text-align:center; color: var(--accent); }
+.widget .label{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-mute); margin-bottom: 6px; }
+.widget .big{ font-size: 36px; font-weight: 800; letter-spacing: -0.01em; text-align:center; color: var(--accent); font-variant-numeric: tabular-nums; font-family: ui-monospace, "SF Mono", monospace; }
 .widget .center{ display:flex; align-items:center; justify-content:center; height:100%; }
 .widget .glyph-sm{
   width: 40px; height: 40px; border-radius: 50%;
@@ -110,13 +126,30 @@
 .widget:hover .glyph-sm{ background: var(--accent-soft); color: var(--accent); }
 .widget .quote{ font-size: 14.5px; line-height: 1.4; font-weight: 600; color: var(--ink); }
 
-.widget[data-color="blue"]{ background: rgba(10,132,255,0.12); }
-.widget[data-color="orange"]{ background: rgba(255,149,0,0.14); }
-.widget[data-color="pink"]{ background: rgba(255,45,85,0.12); }
-.widget[data-color="dark"]{ background: #1c1c1e; }
-.widget[data-color="dark"] .label,
-.widget[data-color="dark"] .quote,
-.widget[data-color="dark"] .big{ color: #f5f5f7; }
+  /* Widgets coloridos — preenchimento sólido, saturado, texto branco (estilo Live Activity) */
+.widget[data-color="blue"]{ background: var(--c-blue); }
+.widget[data-color="purple"]{ background: var(--c-purple); }
+.widget[data-color="green"]{ background: var(--c-green); }
+.widget[data-color="orange"]{ background: var(--c-orange); }
+.widget[data-color="pink"]{ background: var(--c-pink); }
+.widget[data-color="dark"]{ background: var(--c-dark); }
+
+.widget[data-color="blue"] .label, .widget[data-color="blue"] .quote, .widget[data-color="blue"] .big,
+.widget[data-color="purple"] .label, .widget[data-color="purple"] .quote, .widget[data-color="purple"] .big,
+.widget[data-color="green"] .label, .widget[data-color="green"] .quote, .widget[data-color="green"] .big,
+.widget[data-color="orange"] .label, .widget[data-color="orange"] .quote, .widget[data-color="orange"] .big,
+.widget[data-color="pink"] .label, .widget[data-color="pink"] .quote, .widget[data-color="pink"] .big,
+.widget[data-color="dark"] .label, .widget[data-color="dark"] .quote, .widget[data-color="dark"] .big{
+  color: #ffffff;
+}
+.widget[data-color="blue"] .label, .widget[data-color="purple"] .label, .widget[data-color="green"] .label,
+.widget[data-color="orange"] .label, .widget[data-color="pink"] .label, .widget[data-color="dark"] .label{
+  color: rgba(255,255,255,0.72);
+}
+.widget[data-color="blue"] .glyph-sm, .widget[data-color="purple"] .glyph-sm, .widget[data-color="green"] .glyph-sm,
+.widget[data-color="orange"] .glyph-sm, .widget[data-color="pink"] .glyph-sm, .widget[data-color="dark"] .glyph-sm{
+  background: rgba(255,255,255,0.16); color:#fff;
+}
 
 .widget-palette-btn{
   position: absolute; top: 8px; right: 8px;
@@ -142,20 +175,40 @@
 }
 .palette-dot:hover{ transform: scale(1.15); }
 .palette-dot[data-c="white"]{ background:#fff; }
-.palette-dot[data-c="blue"]{ background:#0a84ff; }
-.palette-dot[data-c="purple"]{ background:#af52de; }
-.palette-dot[data-c="green"]{ background:#34c759; }
-.palette-dot[data-c="orange"]{ background:#ff9500; }
-.palette-dot[data-c="pink"]{ background:#ff2d55; }
-.palette-dot[data-c="dark"]{ background:#1c1c1e; }
+.palette-dot[data-c="blue"]{ background:var(--c-blue); }
+.palette-dot[data-c="purple"]{ background:var(--c-purple); }
+.palette-dot[data-c="green"]{ background:var(--c-green); }
+.palette-dot[data-c="orange"]{ background:var(--c-orange); }
+.palette-dot[data-c="pink"]{ background:var(--c-pink); }
+.palette-dot[data-c="dark"]{ background:var(--c-dark); }
 
 @media (max-width: 560px){
   .grid{ display:flex; flex-direction:column; gap: 14px; min-height: auto; background: none; }
   .widget{ position: static !important; width: 100% !important; height: auto !important; min-height: 100px; }
 }
 
+  /* ===== LIÇÕES — HEADER COM LÁPIS ===== */
+  .lessons-header{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom: 28px;
+  }
+  .lessons-header .heading-txt{ display:flex; flex-direction:column; gap:4px; }
+  .lessons-header h2{
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin: 0; color: var(--ink);
+  }
+  .pencil-btn{
+    width: 46px; height: 46px; border-radius: 50%;
+    border: none; background: var(--accent-soft); color: var(--accent);
+    font-size: 18px; cursor: pointer; flex: 0 0 auto;
+    display:flex; align-items:center; justify-content:center;
+    transition: background .2s var(--ease), transform .2s var(--ease), color .2s var(--ease);
+    box-shadow: var(--shadow-soft);
+  }
+  .pencil-btn:hover{ background: var(--accent); color: #fff; transform: scale(1.06) rotate(6deg); }
+  .pencil-btn:active{ transform: scale(0.95); }
 
   .empty{ text-align:center; padding: 100px 20px; color: var(--ink-mute); }
+  .empty.compact{ padding: 60px 20px; }
   .empty .glyph{
     width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%;
     background: var(--gray-1); display:flex; align-items:center; justify-content:center;
@@ -191,12 +244,6 @@
     padding-left: 16px; border-left: 2px solid var(--gray-2);
   }
 
-  .tag-row{ margin-top: 12px; display:flex; flex-wrap: wrap; gap: 6px; }
-  .tag-chip{
-    background: var(--accent-soft); color: var(--accent); border-radius: 999px;
-    padding: 3px 11px; font-size: 11.5px; font-weight: 600;
-  }
-
   .meta{ margin-top: 14px; font-size: 12px; font-weight: 500; color: var(--ink-mute); }
 
   .del{
@@ -227,6 +274,7 @@
   #lessonInput{ min-height: 100px; margin-bottom: 30px; }
   #commentInput{ min-height: 70px; margin-bottom: 30px; }
   #tagsInput{ padding: 14px 20px; margin-bottom: 0; }
+  .tags-hint{ font-size: 12.5px; color: var(--ink-mute); margin-top: 8px; }
 
   .actions{ display:flex; justify-content:flex-end; gap: 12px; margin-top: 32px; }
 
@@ -368,6 +416,187 @@
   #ideaInput::placeholder{ color: var(--ink-mute); }
   #ideaInput:focus{ outline: none; }
 
+  /* ===== O CAMINHO — CATEGORIAS ===== */
+  .cats-list{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .cat-card{
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    transition: box-shadow .25s var(--ease);
+  }
+  .cat-card:hover{ box-shadow: var(--shadow-float); }
+
+  .cat-card[data-color="blue"] .cat-progress-fill{ background: var(--c-blue); }
+  .cat-card[data-color="purple"] .cat-progress-fill{ background: var(--c-purple); }
+  .cat-card[data-color="green"] .cat-progress-fill{ background: var(--c-green); }
+  .cat-card[data-color="orange"] .cat-progress-fill{ background: var(--c-orange); }
+  .cat-card[data-color="pink"] .cat-progress-fill{ background: var(--c-pink); }
+  .cat-card[data-color="dark"] .cat-progress-fill{ background: var(--c-dark); }
+
+  /* Badge do ícone — preenchimento sólido (selo), ícone branco */
+  .cat-card[data-color="blue"] .cat-emoji{ background: var(--c-blue); }
+  .cat-card[data-color="purple"] .cat-emoji{ background: var(--c-purple); }
+  .cat-card[data-color="green"] .cat-emoji{ background: var(--c-green); }
+  .cat-card[data-color="orange"] .cat-emoji{ background: var(--c-orange); }
+  .cat-card[data-color="pink"] .cat-emoji{ background: var(--c-pink); }
+  .cat-card[data-color="dark"] .cat-emoji{ background: var(--c-dark); }
+  .cat-emoji svg{ width: 20px; height: 20px; color:#fff; }
+
+  .cat-header{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .cat-emoji{
+    width: 42px; height: 42px; border-radius: 14px;
+    background: var(--c-blue);
+    display:flex; align-items:center; justify-content:center;
+    flex: 0 0 auto;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  }
+  .cat-info{ flex: 1; min-width: 0; }
+  .cat-name{ font-size: 16px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+  .cat-count{ font-size: 12.5px; color: var(--ink-mute); margin-top: 2px; font-weight: 500; }
+  .cat-progress-track{
+    height: 6px; background: var(--gray-1); border-radius: 999px; margin-top: 8px; overflow: hidden;
+  }
+  .cat-progress-fill{
+    height: 100%; background: var(--accent); border-radius: 999px;
+    transition: width .3s var(--ease);
+  }
+  .cat-chevron{
+    flex: 0 0 auto; font-size: 13px; color: var(--ink-mute);
+    transition: transform .25s var(--ease);
+  }
+  .cat-card.open .cat-chevron{ transform: rotate(90deg); }
+
+  .cat-del-btn{
+    flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%;
+    border: none; background: var(--gray-1); color: var(--ink-soft);
+    font-size: 12px; cursor: pointer; opacity: 0;
+    transition: opacity .2s, background .2s, color .2s;
+  }
+  .cat-header:hover .cat-del-btn{ opacity: 1; }
+  .cat-del-btn:hover{ background: #ff3b30; color: #fff; }
+
+  .cat-body{
+    display: none;
+    border-top: 1px solid var(--gray-1);
+  }
+  .cat-card.open .cat-body{ display: block; animation: rise .25s var(--ease); }
+
+  .cat-items{ display: flex; flex-direction: column; }
+  .cat-item{
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--gray-1);
+  }
+  .cat-item:last-child{ border-bottom: none; }
+
+  .cat-item-check{
+    flex: 0 0 auto; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%;
+    border: 2px solid var(--gray-3); background: transparent; cursor: pointer;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size: 12px;
+    transition: background .2s var(--ease), border-color .2s var(--ease), transform .15s var(--ease);
+  }
+  .cat-item-check.checked{ background: var(--accent); border-color: var(--accent); }
+  .cat-item-check:hover{ transform: scale(1.08); }
+
+  .cat-item-text{
+    flex: 1; font-size: 14.5px; line-height: 1.5; color: var(--ink);
+    outline: none; cursor: text; word-break: break-word;
+  }
+  .cat-item.done .cat-item-text{ color: var(--ink-mute); text-decoration: line-through; }
+
+  .cat-item-del{
+    flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; border: none;
+    background: transparent; color: var(--ink-mute); font-size: 12px; cursor: pointer;
+    opacity: 0; transition: opacity .2s, background .2s, color .2s;
+  }
+  .cat-item:hover .cat-item-del{ opacity: 1; }
+  .cat-item-del:hover{ background: #ff3b30; color: #fff; }
+
+  .cat-add-item{
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 20px;
+  }
+  .cat-add-item input{
+    flex: 1; border: none; background: var(--bg-soft); border-radius: 12px;
+    padding: 10px 14px; font-family: inherit; font-size: 14px; color: var(--ink);
+  }
+  .cat-add-item input:focus{ outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+  .cat-add-item button{
+    flex: 0 0 auto; border: none; background: var(--accent); color: #fff;
+    width: 32px; height: 32px; border-radius: 50%; font-size: 15px; cursor: pointer;
+    display: flex; align-items:center; justify-content:center;
+    transition: transform .15s var(--ease);
+  }
+  .cat-add-item button:hover{ transform: scale(1.08); }
+
+  .cat-new-card{
+    border: 2px dashed var(--gray-3);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; color: var(--ink-mute); font-weight: 600; font-size: 14.5px;
+    transition: border-color .2s var(--ease), color .2s var(--ease), background .2s var(--ease);
+    background: transparent;
+  }
+  .cat-new-card:hover{ border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .cat-new-plus{
+    width: 30px; height: 30px; border-radius: 50%; background: var(--gray-1);
+    display:flex; align-items:center; justify-content:center; font-size: 15px; flex: 0 0 auto;
+    transition: background .2s, color .2s;
+  }
+  .cat-new-card:hover .cat-new-plus{ background: var(--white); color: var(--accent); }
+
+  .cat-form{
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+    padding: 22px 22px 20px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .cat-form-row{ display: flex; gap: 10px; }
+  .cat-form-row input[type="text"]{
+    padding: 12px 16px; font-size: 15px; margin-bottom: 0;
+  }
+  .icon-pick{
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .icon-opt{
+    width: 38px; height: 38px; border-radius: 10px; border: none;
+    background: var(--gray-1); cursor: pointer;
+    display: flex; align-items:center; justify-content:center;
+    color: var(--ink-soft);
+    transition: background .15s, transform .15s, color .15s;
+  }
+  .icon-opt svg{ width: 18px; height: 18px; }
+  .icon-opt.sel{ background: var(--accent); color: #fff; transform: scale(1.05); }
+  .icon-opt:hover{ transform: scale(1.06); }
+  .color-pick{ display: flex; gap: 8px; }
+  .color-opt{
+    width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;
+    transition: transform .15s, border-color .15s;
+  }
+  .color-opt.sel{ border-color: var(--ink); transform: scale(1.1); }
+  .color-opt[data-c="blue"]{ background:var(--c-blue); }
+  .color-opt[data-c="purple"]{ background:var(--c-purple); }
+  .color-opt[data-c="green"]{ background:var(--c-green); }
+  .color-opt[data-c="orange"]{ background:var(--c-orange); }
+  .color-opt[data-c="pink"]{ background:var(--c-pink); }
+  .color-opt[data-c="dark"]{ background:var(--c-dark); }
+  .cat-form .actions{ margin-top: 4px; }
+
   @media (max-width: 480px){
     h1{ font-size: 32px; }
     .app{ padding: 48px 18px 100px; }
@@ -388,8 +617,7 @@
   <div class="segmented">
     <button id="tabHome" class="active">Início</button>
     <button id="tabList">Lições</button>
-    <button id="tabWrite">Escrever</button>
-    <button id="tabIdeas"> Ideias</button>
+    <button id="tabDreams">Vida dos Sonhos</button>
   </div>
 
   <div id="viewHome" class="view active">
@@ -397,10 +625,18 @@
   </div>
 
   <div id="viewList" class="view">
+    <div class="lessons-header">
+      <div class="heading-txt">
+        <span class="eyebrow">SUAS LIÇÕES</span>
+        <h2>Tudo o que você guardou</h2>
+      </div>
+      <button id="openWriteBtn" class="pencil-btn" title="Escrever nova lição">✎</button>
+    </div>
+
     <div id="emptyState" class="empty" style="display:none;">
       <div class="glyph">＋</div>
       <p><strong>Nenhuma lição ainda</strong></p>
-      <p>Toque em "Escrever" para guardar a primeira.</p>
+      <p>Toque no lápis para guardar a primeira.</p>
     </div>
     <div id="lessonsList" class="lessons"></div>
   </div>
@@ -415,6 +651,7 @@
 
       <label for="tagsInput">Tags (opcional)</label>
       <input type="text" id="tagsInput" placeholder="trabalho, foco, dinheiro...">
+      <p class="tags-hint">As tags ficam guardadas para filtrar suas lições no futuro — elas não aparecem na lista.</p>
 
       <div class="actions">
         <button class="ghost" id="cancelBtn">Cancelar</button>
@@ -423,24 +660,62 @@
     </div>
   </div>
 
-  <div id="viewIdeas" class="view">
+  <div id="viewDreams" class="view">
     <div class="ideas-header">
-      <span class="eyebrow">RASCUNHOS</span>
-      <p class="sub">Ideias soltas. Marque quando fixar ou concluir.</p>
+      <span class="eyebrow">VIDA DOS SONHOS</span>
+      <p class="sub">De um lado, a vida que você quer viver. Do outro, o caminho até ela.</p>
     </div>
 
-    <div id="ideasEmpty" class="empty" style="display:none;">
-      <div class="glyph">✓</div>
-      <p><strong>Nenhuma ideia ainda</strong></p>
-      <p>Adicione uma abaixo para começar sua lista.</p>
+    <div class="segmented sub">
+      <button id="subLife" class="active">A Vida dos Sonhos</button>
+      <button id="subPath">O Caminho</button>
     </div>
 
-    <div class="ideas-list" id="ideasList"></div>
+    <!-- SUB-VIEW: A VIDA DOS SONHOS (categorias: viagens, leitura, saúde etc.) -->
+    <div id="subviewPath" class="subview active">
+      <div class="cats-list" id="catsList"></div>
 
-    <form id="ideaForm" class="idea-add">
-      <span class="idea-add-icon">＋</span>
-      <input type="text" id="ideaInput" placeholder="Nova ideia..." autocomplete="off" />
-    </form>
+      <div class="cat-new-card" id="openNewCatBtn" style="margin-top:14px;">
+        <span class="cat-new-plus">＋</span>
+        Nova categoria
+      </div>
+
+      <div id="catFormWrap" style="display:none; margin-top:14px;">
+        <div class="cat-form">
+          <div class="cat-form-row">
+            <input type="text" id="catNameInput" placeholder="Nome da categoria (ex: Espiritualidade)">
+          </div>
+          <div>
+            <label style="margin-bottom:8px;">Ícone</label>
+            <div class="icon-pick" id="iconPick"></div>
+          </div>
+          <div>
+            <label style="margin-bottom:8px;">Cor</label>
+            <div class="color-pick" id="colorPick"></div>
+          </div>
+          <div class="actions">
+            <button class="ghost" id="cancelCatBtn">Cancelar</button>
+            <button class="primary" id="saveCatBtn" disabled>Criar categoria</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW: O CAMINHO (checklist livre — tarefas diárias para alcançar a vida dos sonhos) -->
+    <div id="subviewLife" class="subview">
+      <div id="ideasEmpty" class="empty compact" style="display:none;">
+        <div class="glyph">✓</div>
+        <p><strong>Nenhuma tarefa anotada ainda</strong></p>
+        <p>Descreva abaixo o que você vai fazer para alcançar a vida dos seus sonhos.</p>
+      </div>
+
+      <div class="ideas-list" id="ideasList"></div>
+
+      <form id="ideaForm" class="idea-add">
+        <span class="idea-add-icon">＋</span>
+        <input type="text" id="ideaInput" placeholder="O que você vai fazer hoje para chegar lá?..." autocomplete="off" />
+      </form>
+    </div>
   </div>
 </div>
 
@@ -451,12 +726,11 @@
   /* ====== REFERÊNCIAS DOM ====== */
   const tabHome = document.getElementById('tabHome');
   const tabList = document.getElementById('tabList');
-  const tabWrite = document.getElementById('tabWrite');
-  const tabIdeas = document.getElementById('tabIdeas');
+  const tabDreams = document.getElementById('tabDreams');
   const viewHome = document.getElementById('viewHome');
   const viewList = document.getElementById('viewList');
   const viewWrite = document.getElementById('viewWrite');
-  const viewIdeas = document.getElementById('viewIdeas');
+  const viewDreams = document.getElementById('viewDreams');
   const lessonsList = document.getElementById('lessonsList');
   const emptyState = document.getElementById('emptyState');
   const lessonInput = document.getElementById('lessonInput');
@@ -464,13 +738,58 @@
   const tagsInput = document.getElementById('tagsInput');
   const saveBtn = document.getElementById('saveBtn');
   const cancelBtn = document.getElementById('cancelBtn');
+  const openWriteBtn = document.getElementById('openWriteBtn');
   const toast = document.getElementById('toast');
   const widgetGrid = document.getElementById('widgetGrid');
 
+  const subLife = document.getElementById('subLife');
+  const subPath = document.getElementById('subPath');
+  const subviewLife = document.getElementById('subviewLife');
+  const subviewPath = document.getElementById('subviewPath');
+
+  const catsList = document.getElementById('catsList');
+  const openNewCatBtn = document.getElementById('openNewCatBtn');
+  const catFormWrap = document.getElementById('catFormWrap');
+  const catNameInput = document.getElementById('catNameInput');
+  const iconPick = document.getElementById('iconPick');
+  const colorPick = document.getElementById('colorPick');
+  const saveCatBtn = document.getElementById('saveCatBtn');
+  const cancelCatBtn = document.getElementById('cancelCatBtn');
+
   /* ====== ESTADO ====== */
   let lessons = [];
-  let ideas = [];
+  let ideas = [];        // "O Caminho" — checklist livre (tarefas diárias)
+  let categories = [];   // "A Vida dos Sonhos" — categorias com itens
   let widgetOrder = null;
+  let widgetLayout = null;
+
+  /* ====== ÍCONES — set duotone geométrico, estilo fintech (ref) ====== */
+  const ICONS = {
+    heart:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.4 2 4.8 5.6 4.2 8 3.8 10 5 12 7.4 14 5 16 3.8 18.4 4.2 22 4.8 23.6 8.4 22 11.7 19.5 16.4 12 21 12 21z"/></svg>',
+    bank:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 22 8H2z"/><path d="M4 10h2v9H4zm4.5 0h2v9h-2zM13 10h2v9h-2zm4.5 0H21v9h-3.5z"/><path d="M2 20h20v2H2z"/></svg>',
+    grad:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 1 8l11 5 9-4.1V17h2V8z"/><path d="M6 12.5V17c0 1.8 2.7 3.5 6 3.5s6-1.7 6-3.5v-4.5l-6 2.7z"/></svg>',
+    book:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4c2.5-1 5.4-1 7 0v14c-1.6-1-4.5-1-7 0zM20 4c-2.5-1-5.4-1-7 0v14c1.6-1 4.5-1 7 0z"/></svg>',
+    gem:     '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>',
+    plane:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V4.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V18l-2.5 1.8V21l3.5-1 3.5 1v-1.2L13 18v-4.5z"/></svg>',
+    case:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6a2 2 0 0 1 2 2v2h3a1 1 0 0 1 1 1v3H2V8a1 1 0 0 1 1-1h3V5a2 2 0 0 1 2-2zm0 2v2h6V5zM2 12h20v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg>',
+    home:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 11h3v10h6v-6h2v6h6V11h3z"/></svg>',
+    music:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4v11.2a3.5 3.5 0 1 1-2-3.16V7l-8 2v8.2a3.5 3.5 0 1 1-2-3.16V5z"/></svg>',
+    sun:     '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4.5"/><path d="M12 1v3M12 20v3M23 12h-3M4 12H1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1M19.8 19.8l-2.1-2.1M6.3 6.3 4.2 4.2"/></svg>',
+  };
+  const ICON_KEYS = Object.keys(ICONS);
+  const COLORS = ['blue','purple','green','orange','pink','dark'];
+
+  const defaultCategories = () => ([
+    { id:'saude',        name:'Saúde',            icon:'heart', color:'green',  items:[] },
+    { id:'financas',     name:'Finanças',         icon:'bank',  color:'orange', items:[] },
+    { id:'conhecimento', name:'Conhecimento',     icon:'grad',  color:'purple', items:[] },
+    { id:'leitura',      name:'Leitura',          icon:'book',  color:'blue',   items:[] },
+    { id:'hobbies',      name:'Hobbies',          icon:'gem',   color:'pink',   items:[] },
+    { id:'viagens',      name:'Viagens',          icon:'plane', color:'blue',   items:[] },
+    { id:'carreira',     name:'Carreira/Negócio', icon:'case',  color:'dark',   items:[] },
+  ]);
+
+  function iconSvg(key){ return ICONS[key] || ICONS.gem; }
 
   function showToast(msg){
     toast.textContent = msg;
@@ -479,17 +798,27 @@
   }
 
   /* ====== NAVEGAÇÃO ENTRE ABAS ====== */
-  const tabs = { home: [tabHome, viewHome], list: [tabList, viewList], write: [tabWrite, viewWrite], ideas: [tabIdeas, viewIdeas] };
+  const tabs = {
+    home:   [tabHome, viewHome],
+    list:   [tabList, viewList],
+    write:  [null, viewWrite],
+    dreams: [tabDreams, viewDreams]
+  };
 
   function switchTab(which){
-    Object.values(tabs).forEach(([btn, view]) => { btn.classList.remove('active'); view.classList.remove('active'); });
+    Object.values(tabs).forEach(([btn, view]) => {
+      if(btn) btn.classList.remove('active');
+      view.classList.remove('active');
+    });
     const [btn, view] = tabs[which];
-    btn.classList.add('active');
+    if(btn) btn.classList.add('active');
     view.classList.add('active');
+
+    if(which === 'write') tabList.classList.add('active');
 
     if(which === 'list') render();
     if(which === 'home') renderDashboard();
-    if(which === 'ideas') renderIdeas();
+    if(which === 'dreams') switchSub('life');
     if(which === 'write'){
       lessonInput.value = '';
       commentInput.value = '';
@@ -499,11 +828,28 @@
     }
   }
 
+  /* ====== SUB-ABAS DE "VIDA DOS SONHOS" ======
+     "life" (A Vida dos Sonhos) => categorias (viagens, leitura, saúde etc.)
+     "path" (O Caminho)        => checklist livre (tarefas diárias) */
+  function switchSub(which){
+    if(which === 'life'){
+      subLife.classList.add('active'); subPath.classList.remove('active');
+      subviewPath.classList.add('active'); subviewLife.classList.remove('active');
+      renderCategories();
+    } else {
+      subPath.classList.add('active'); subLife.classList.remove('active');
+      subviewLife.classList.add('active'); subviewPath.classList.remove('active');
+      renderIdeas();
+    }
+  }
+
   tabHome.addEventListener('click', ()=> switchTab('home'));
   tabList.addEventListener('click', ()=> switchTab('list'));
-  tabWrite.addEventListener('click', ()=> switchTab('write'));
-  tabIdeas.addEventListener('click', ()=> switchTab('ideas'));
+  tabDreams.addEventListener('click', ()=> switchTab('dreams'));
+  openWriteBtn.addEventListener('click', ()=> switchTab('write'));
   cancelBtn.addEventListener('click', ()=> switchTab('list'));
+  subLife.addEventListener('click', ()=> switchSub('life'));
+  subPath.addEventListener('click', ()=> switchSub('path'));
 
   lessonInput.addEventListener('input', ()=>{
     saveBtn.disabled = lessonInput.value.trim().length === 0;
@@ -521,6 +867,9 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+  function uid(){
+    return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
   }
 
   /* ====== VIEW "LIÇÕES" ====== */
@@ -543,7 +892,6 @@
         <div class="card-body">
           <div class="lesson-text"></div>
           ${item.comment ? '<div class="comment"></div>' : ''}
-          ${item.tags && item.tags.length ? `<div class="tag-row">${item.tags.map(t => `<span class="tag-chip">#${escapeHtml(t)}</span>`).join('')}</div>` : ''}
           <div class="meta">${formatDate(item.createdAt)}</div>
         </div>
         <button class="del" title="Apagar">✕</button>
@@ -561,7 +909,7 @@
   const widgetDefs = [
     { id: 'hoje', render: renderDateWidget },
     { id: 'ultima', render: renderLastWidget },
-    { id: 'ideasw', render: renderIdeasWidget },
+    { id: 'ideasw', render: renderDreamsWidget },
     { id: 'contador', render: renderCounterWidget },
     { id: 'escrever', render: renderNewBtnWidget },
     { id: 'aleatoria', render: renderRandomWidget },
@@ -571,12 +919,10 @@
     hoje:      { x: 0,   y: 0,   w: 160, h: 112, color: 'white' },
     ultima:    { x: 174, y: 0,   w: 334, h: 238, color: 'white' },
     contador:  { x: 522, y: 0,   w: 160, h: 112, color: 'blue' },
-    ideasw:    { x: 0,   y: 126, w: 334, h: 112, color: 'white' },
+    ideasw:    { x: 0,   y: 126, w: 334, h: 112, color: 'purple' },
     escrever:  { x: 522, y: 126, w: 160, h: 112, color: 'white' },
     aleatoria: { x: 348, y: 252, w: 334, h: 112, color: 'white' },
   };
-
-  let widgetLayout = null;
 
   function renderDateWidget(){
     const raw = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
@@ -588,9 +934,9 @@
     const last = sorted[0];
     return `<div class="label">Última lição</div><div class="quote">${last ? escapeHtml(last.text) : 'Nenhuma lição ainda'}</div>`;
   }
-  function renderIdeasWidget(){
+  function renderDreamsWidget(){
     const pending = ideas.filter(i => !i.done).length;
-    return `<div style="font-weight:700;font-size:15px;margin-bottom:4px">Ideias</div><div class="label" style="margin-bottom:0">${pending} pendente${pending === 1 ? '' : 's'} →</div>`;
+    return `<div style="font-weight:700;font-size:15px;margin-bottom:4px">Vida dos Sonhos</div><div class="label" style="margin-bottom:0">${pending} pendente${pending === 1 ? '' : 's'} →</div>`;
   }
   function renderCounterWidget(){
     return `<div class="big">${lessons.length}</div><div class="label" style="text-align:center;margin-bottom:0">lições guardadas</div>`;
@@ -643,7 +989,7 @@
       div.addEventListener('click', (e) => {
         if(e.target === paletteBtn) return;
         if(wasDragged) { wasDragged = false; return; }
-        if(def.id === 'ideasw') switchTab('ideas');
+        if(def.id === 'ideasw'){ switchTab('dreams'); }
         if(def.id === 'escrever') switchTab('write');
       });
 
@@ -744,7 +1090,7 @@
     el.addEventListener('touchstart', onDown, { passive: true });
   }
 
-  /* ====== VIEW "IDEIAS" — CHECKLIST ====== */
+  /* ====== SUB-VIEW "O CAMINHO" — CHECKLIST DIÁRIO ====== */
   function renderIdeas(){
     const container = document.getElementById('ideasList');
     const empty = document.getElementById('ideasEmpty');
@@ -784,12 +1130,7 @@
 
   async function addIdea(text){
     if(!text.trim()) return;
-    ideas.push({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-      text: text.trim(),
-      done: false,
-      createdAt: Date.now()
-    });
+    ideas.push({ id: uid(), text: text.trim(), done: false, createdAt: Date.now() });
     await persistIdeas();
     renderIdeas();
   }
@@ -822,73 +1163,249 @@
     input.value = '';
   });
 
+  /* ====== SUB-VIEW "A VIDA DOS SONHOS" — CATEGORIAS ====== */
+  let openCatIds = new Set();
+
+  function renderCategories(){
+    catsList.innerHTML = '';
+
+    categories.forEach(cat => {
+      const total = cat.items.length;
+      const done = cat.items.filter(i => i.done).length;
+      const pct = total ? Math.round((done/total)*100) : 0;
+      const isOpen = openCatIds.has(cat.id);
+
+      const card = document.createElement('div');
+      card.className = 'cat-card' + (isOpen ? ' open' : '');
+      card.dataset.color = cat.color;
+
+      card.innerHTML = `
+        <div class="cat-header">
+          <div class="cat-emoji">${iconSvg(cat.icon)}</div>
+          <div class="cat-info">
+            <div class="cat-name"></div>
+            <div class="cat-count">${done}/${total} concluído${total===1?'':'s'}</div>
+            <div class="cat-progress-track"><div class="cat-progress-fill" style="width:${pct}%"></div></div>
+          </div>
+          <button class="cat-del-btn" title="Apagar categoria">✕</button>
+          <div class="cat-chevron">▸</div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-items"></div>
+          <form class="cat-add-item">
+            <input type="text" placeholder="Adicionar item...">
+            <button type="submit">＋</button>
+          </form>
+        </div>
+      `;
+
+      card.querySelector('.cat-name').textContent = cat.name;
+
+      const itemsWrap = card.querySelector('.cat-items');
+      cat.items.slice().sort((a,b)=> b.createdAt - a.createdAt).forEach(item => {
+        const itEl = document.createElement('div');
+        itEl.className = 'cat-item' + (item.done ? ' done' : '');
+        itEl.innerHTML = `
+          <button class="cat-item-check ${item.done ? 'checked' : ''}">${item.done ? '✓' : ''}</button>
+          <div class="cat-item-text" contenteditable="true"></div>
+          <button class="cat-item-del" title="Apagar">✕</button>
+        `;
+        itEl.querySelector('.cat-item-text').textContent = item.text;
+
+        itEl.querySelector('.cat-item-check').onclick = () => toggleCatItem(cat.id, item.id);
+        itEl.querySelector('.cat-item-del').onclick = () => deleteCatItem(cat.id, item.id);
+
+        const txt = itEl.querySelector('.cat-item-text');
+        txt.onblur = () => editCatItem(cat.id, item.id, txt.textContent.trim());
+        txt.onkeydown = (e) => { if(e.key === 'Enter'){ e.preventDefault(); txt.blur(); } };
+
+        itemsWrap.appendChild(itEl);
+      });
+
+      card.querySelector('.cat-header').addEventListener('click', (e) => {
+        if(e.target.closest('.cat-del-btn')) return;
+        if(isOpen) openCatIds.delete(cat.id); else openCatIds.add(cat.id);
+        renderCategories();
+      });
+
+      card.querySelector('.cat-del-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteCategory(cat.id);
+      });
+
+      const addForm = card.querySelector('.cat-add-item');
+      addForm.addEventListener('click', (e) => e.stopPropagation());
+      addForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = addForm.querySelector('input');
+        addCatItem(cat.id, input.value);
+        input.value = '';
+      });
+
+      catsList.appendChild(card);
+    });
+  }
+
+  async function addCatItem(catId, text){
+    if(!text.trim()) return;
+    categories = categories.map(c => c.id === catId
+      ? { ...c, items: [...c.items, { id: uid(), text: text.trim(), done: false, createdAt: Date.now() }] }
+      : c);
+    await persistCategories();
+    renderCategories();
+  }
+
+  async function toggleCatItem(catId, itemId){
+    categories = categories.map(c => c.id === catId
+      ? { ...c, items: c.items.map(i => i.id === itemId ? { ...i, done: !i.done } : i) }
+      : c);
+    await persistCategories();
+    renderCategories();
+  }
+
+  async function editCatItem(catId, itemId, newText){
+    if(newText === ''){ return deleteCatItem(catId, itemId); }
+    categories = categories.map(c => c.id === catId
+      ? { ...c, items: c.items.map(i => i.id === itemId ? { ...i, text: newText } : i) }
+      : c);
+    await persistCategories();
+  }
+
+  async function deleteCatItem(catId, itemId){
+    categories = categories.map(c => c.id === catId
+      ? { ...c, items: c.items.filter(i => i.id !== itemId) }
+      : c);
+    await persistCategories();
+    renderCategories();
+  }
+
+  async function deleteCategory(catId){
+    categories = categories.filter(c => c.id !== catId);
+    openCatIds.delete(catId);
+    await persistCategories();
+    renderCategories();
+  }
+
+  /* ---- Formulário de nova categoria ---- */
+  let selectedIcon = ICON_KEYS[0];
+  let selectedColor = COLORS[0];
+
+  function buildIconPicker(){
+    iconPick.innerHTML = '';
+    ICON_KEYS.forEach(key => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'icon-opt' + (key === selectedIcon ? ' sel' : '');
+      b.innerHTML = ICONS[key];
+      b.onclick = () => { selectedIcon = key; buildIconPicker(); };
+      iconPick.appendChild(b);
+    });
+  }
+  function buildColorPicker(){
+    colorPick.innerHTML = '';
+    COLORS.forEach(c => {
+      const b = document.createElement('span');
+      b.className = 'color-opt' + (c === selectedColor ? ' sel' : '');
+      b.dataset.c = c;
+      b.onclick = () => { selectedColor = c; buildColorPicker(); };
+      colorPick.appendChild(b);
+    });
+  }
+
+  openNewCatBtn.addEventListener('click', () => {
+    openNewCatBtn.style.display = 'none';
+    catFormWrap.style.display = 'block';
+    catNameInput.value = '';
+    selectedIcon = ICON_KEYS[0];
+    selectedColor = COLORS[0];
+    buildIconPicker();
+    buildColorPicker();
+    saveCatBtn.disabled = true;
+    catNameInput.focus();
+  });
+
+  cancelCatBtn.addEventListener('click', () => {
+    catFormWrap.style.display = 'none';
+    openNewCatBtn.style.display = 'flex';
+  });
+
+  catNameInput.addEventListener('input', () => {
+    saveCatBtn.disabled = catNameInput.value.trim().length === 0;
+  });
+
+  saveCatBtn.addEventListener('click', async () => {
+    const name = catNameInput.value.trim();
+    if(!name) return;
+    categories.push({
+      id: uid(),
+      name,
+      icon: selectedIcon,
+      color: selectedColor,
+      items: []
+    });
+    await persistCategories();
+    catFormWrap.style.display = 'none';
+    openNewCatBtn.style.display = 'flex';
+    renderCategories();
+    showToast('Categoria criada.');
+  });
+
   /* ====== PERSISTÊNCIA (localStorage) ====== */
   async function loadLessons(){
     try{
       const raw = localStorage.getItem('licoes:list');
       lessons = raw ? JSON.parse(raw) : [];
-    }catch(e){
-      lessons = [];
-    }
+    }catch(e){ lessons = []; }
   }
 
   async function persist(){
-    try{
-      localStorage.setItem('licoes:list', JSON.stringify(lessons));
-    }catch(e){
-      console.error('Falha ao salvar', e);
-    }
+    try{ localStorage.setItem('licoes:list', JSON.stringify(lessons)); }
+    catch(e){ console.error('Falha ao salvar', e); }
   }
 
   async function loadIdeas(){
     try{
-      const raw = localStorage.getItem('licoes:ideas');
+      const raw = localStorage.getItem('licoes:dreams-life');
       ideas = raw ? JSON.parse(raw) : [];
-    }catch(e){
-      ideas = [];
-    }
+    }catch(e){ ideas = []; }
   }
 
   async function persistIdeas(){
+    try{ localStorage.setItem('licoes:dreams-life', JSON.stringify(ideas)); }
+    catch(e){ console.error('Falha ao salvar caminho', e); }
+  }
+
+  async function loadCategories(){
     try{
-      localStorage.setItem('licoes:ideas', JSON.stringify(ideas));
-    }catch(e){
-      console.error('Falha ao salvar ideias', e);
-    }
+      const raw = localStorage.getItem('licoes:dreams-path');
+      const parsed = raw ? JSON.parse(raw) : defaultCategories();
+      // migra categorias antigas salvas com "emoji" para o novo set de ícones
+      categories = parsed.map(c => c.icon ? c : { ...c, icon: 'gem' });
+    }catch(e){ categories = defaultCategories(); }
+  }
+
+  async function persistCategories(){
+    try{ localStorage.setItem('licoes:dreams-path', JSON.stringify(categories)); }
+    catch(e){ console.error('Falha ao salvar categorias', e); }
   }
 
   async function loadLayout(){
     try{
       const raw = localStorage.getItem('licoes:widget-layout');
       widgetLayout = raw ? JSON.parse(raw) : null;
-    }catch(e){
-      widgetLayout = null;
-    }
+    }catch(e){ widgetLayout = null; }
   }
 
   async function persistLayout(layout){
-    try{
-      localStorage.setItem('licoes:widget-layout', JSON.stringify(layout));
-    }catch(e){
-      console.error('Falha ao salvar layout', e);
-    }
+    try{ localStorage.setItem('licoes:widget-layout', JSON.stringify(layout)); }
+    catch(e){ console.error('Falha ao salvar layout', e); }
   }
 
   async function loadOrder(){
     try{
       const raw = localStorage.getItem('licoes:widget-order');
       widgetOrder = raw ? JSON.parse(raw) : null;
-    }catch(e){
-      widgetOrder = null;
-    }
-  }
-
-  async function persistOrder(order){
-    try{
-      localStorage.setItem('licoes:widget-order', JSON.stringify(order));
-    }catch(e){
-      console.error('Falha ao salvar ordem', e);
-    }
+    }catch(e){ widgetOrder = null; }
   }
 
   /* ====== AÇÕES: LIÇÕES ====== */
@@ -897,13 +1414,7 @@
     if(!text) return;
     const comment = commentInput.value.trim();
     const tags = parseTags(tagsInput.value);
-    lessons.push({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
-      text,
-      comment,
-      tags,
-      createdAt: Date.now()
-    });
+    lessons.push({ id: uid(), text, comment, tags, createdAt: Date.now() });
     await persist();
     showToast('Lição guardada.');
     switchTab('list');
@@ -920,7 +1431,7 @@
 
   /* ====== INICIALIZAÇÃO ====== */
   (async function init(){
-    await Promise.all([loadLessons(), loadOrder(), loadIdeas(), loadLayout()]);
+    await Promise.all([loadLessons(), loadOrder(), loadIdeas(), loadCategories(), loadLayout()]);
     renderDashboard();
   })();
 })();

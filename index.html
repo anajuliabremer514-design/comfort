@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lições</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --white: #ffffff;
@@ -259,14 +260,14 @@
 
   label{ display:block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-mute); margin-bottom: 10px; }
 
-  textarea, input[type="text"]{
+  textarea, input[type="text"], input[type="password"]{
     width: 100%; border: none; border-radius: var(--radius-sm);
     padding: 18px 20px; font-family: inherit; font-size: 16px; color: var(--ink);
     background: var(--bg-soft); resize: vertical; line-height: 1.6;
     transition: box-shadow .25s var(--ease), background .25s var(--ease);
   }
   textarea::placeholder, input::placeholder{ color: var(--ink-mute); }
-  textarea:focus, input[type="text"]:focus{
+  textarea:focus, input[type="text"]:focus, input[type="password"]:focus{
     outline:none; background: var(--white);
     box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-soft);
   }
@@ -439,7 +440,6 @@
   .cat-card[data-color="pink"] .cat-progress-fill{ background: var(--c-pink); }
   .cat-card[data-color="dark"] .cat-progress-fill{ background: var(--c-dark); }
 
-  /* Badge do ícone — preenchimento sólido (selo), ícone branco */
   .cat-card[data-color="blue"] .cat-emoji{ background: var(--c-blue); }
   .cat-card[data-color="purple"] .cat-emoji{ background: var(--c-purple); }
   .cat-card[data-color="green"] .cat-emoji{ background: var(--c-green); }
@@ -597,6 +597,8 @@
   .color-opt[data-c="dark"]{ background:var(--c-dark); }
   .cat-form .actions{ margin-top: 4px; }
 
+  .header-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+
   @media (max-width: 480px){
     h1{ font-size: 32px; }
     .app{ padding: 48px 18px 100px; }
@@ -607,12 +609,40 @@
 </head>
 <body>
 
-<div class="app">
+<!-- ===== TELA DE LOGIN / CADASTRO ===== -->
+<div id="authScreen" class="app" style="max-width:420px;">
   <header>
     <span class="eyebrow">Diário pessoal</span>
-    <h1>Lições</h1>
-    <p class="sub">O que a vida te ensinou — guardado num lugar só seu.</p>
+    <h1 id="authTitle">Entrar</h1>
+    <p class="sub" id="authSub">Acesse para ver suas lições em qualquer lugar.</p>
   </header>
+
+  <div class="form-card">
+    <label for="authEmail">E-mail</label>
+    <input type="text" id="authEmail" placeholder="voce@email.com" style="margin-bottom:20px;">
+
+    <label for="authPass">Senha</label>
+    <input type="password" id="authPass" placeholder="••••••••" style="margin-bottom:8px;">
+    <p id="authError" style="color:#ff3b30;font-size:13px;min-height:18px;margin:6px 0 0;"></p>
+
+    <div class="actions" style="justify-content:space-between;align-items:center;">
+      <button class="ghost" id="authToggle" type="button">Criar conta</button>
+      <button class="primary" id="authSubmit" type="button">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP PRINCIPAL (escondido até logar) ===== -->
+<div id="mainApp" style="display:none;">
+<div class="app">
+  <div class="header-row">
+    <header style="flex:1;">
+      <span class="eyebrow">Diário pessoal</span>
+      <h1>Lições</h1>
+      <p class="sub">O que a vida te ensinou — guardado num lugar só seu.</p>
+    </header>
+    <button id="logoutBtn" class="ghost" style="margin-top:64px;flex:0 0 auto;">Sair</button>
+  </div>
 
   <div class="segmented">
     <button id="tabHome" class="active">Início</button>
@@ -671,7 +701,6 @@
       <button id="subPath">O Caminho</button>
     </div>
 
-    <!-- SUB-VIEW: A VIDA DOS SONHOS (categorias: viagens, leitura, saúde etc.) -->
     <div id="subviewPath" class="subview active">
       <div class="cats-list" id="catsList"></div>
 
@@ -701,7 +730,6 @@
       </div>
     </div>
 
-    <!-- SUB-VIEW: O CAMINHO (checklist livre — tarefas diárias para alcançar a vida dos sonhos) -->
     <div id="subviewLife" class="subview">
       <div id="ideasEmpty" class="empty compact" style="display:none;">
         <div class="glyph">✓</div>
@@ -718,12 +746,82 @@
     </div>
   </div>
 </div>
+</div>
 
 <div class="toast" id="toast">Lição guardada.</div>
 
 <script>
 (function(){
-  /* ====== REFERÊNCIAS DOM ====== */
+  /* ====== SUPABASE ====== */
+  const SUPABASE_URL = 'COLE_SUA_PROJECT_URL_AQUI';
+  const SUPABASE_KEY = 'COLE_SUA_ANON_KEY_AQUI';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* ====== REFERÊNCIAS DOM — AUTH ====== */
+  const authScreen = document.getElementById('authScreen');
+  const mainApp = document.getElementById('mainApp');
+  const authEmail = document.getElementById('authEmail');
+  const authPass = document.getElementById('authPass');
+  const authError = document.getElementById('authError');
+  const authTitle = document.getElementById('authTitle');
+  const authSubmitBtn = document.getElementById('authSubmit');
+  const authToggleBtn = document.getElementById('authToggle');
+  const logoutBtn = document.getElementById('logoutBtn');
+  let isSignup = false;
+
+  authToggleBtn.addEventListener('click', () => {
+    isSignup = !isSignup;
+    authTitle.textContent = isSignup ? 'Criar conta' : 'Entrar';
+    authSubmitBtn.textContent = isSignup ? 'Cadastrar' : 'Entrar';
+    authToggleBtn.textContent = isSignup ? 'Já tenho conta' : 'Criar conta';
+    authError.style.color = '#ff3b30';
+    authError.textContent = '';
+  });
+
+  authSubmitBtn.addEventListener('click', async () => {
+    const email = authEmail.value.trim();
+    const password = authPass.value;
+    authError.style.color = '#ff3b30';
+    authError.textContent = '';
+    if(!email || !password){ authError.textContent = 'Preencha e-mail e senha.'; return; }
+
+    authSubmitBtn.disabled = true;
+    const { data, error } = isSignup
+      ? await supabase.auth.signUp({ email, password })
+      : await supabase.auth.signInWithPassword({ email, password });
+    authSubmitBtn.disabled = false;
+
+    if(error){ authError.textContent = error.message; return; }
+
+    if(isSignup && !data.session){
+      authError.style.color = '#0a84ff';
+      authError.textContent = 'Verifique seu e-mail para confirmar o cadastro.';
+      return;
+    }
+    startApp();
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    mainApp.style.display = 'none';
+    authScreen.style.display = 'block';
+    authEmail.value = '';
+    authPass.value = '';
+  });
+
+  async function startApp(){
+    authScreen.style.display = 'none';
+    mainApp.style.display = 'block';
+    await Promise.all([loadLessons(), loadIdeas(), loadCategories(), loadLayout()]);
+    renderDashboard();
+  }
+
+  supabase.auth.getSession().then(({ data }) => {
+    if(data.session) startApp();
+    else authScreen.style.display = 'block';
+  });
+
+  /* ====== REFERÊNCIAS DOM — APP ====== */
   const tabHome = document.getElementById('tabHome');
   const tabList = document.getElementById('tabList');
   const tabDreams = document.getElementById('tabDreams');
@@ -758,12 +856,11 @@
 
   /* ====== ESTADO ====== */
   let lessons = [];
-  let ideas = [];        // "O Caminho" — checklist livre (tarefas diárias)
-  let categories = [];   // "A Vida dos Sonhos" — categorias com itens
-  let widgetOrder = null;
+  let ideas = [];
+  let categories = [];
   let widgetLayout = null;
 
-  /* ====== ÍCONES — set duotone geométrico, estilo fintech (ref) ====== */
+  /* ====== ÍCONES ====== */
   const ICONS = {
     heart:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.4 2 4.8 5.6 4.2 8 3.8 10 5 12 7.4 14 5 16 3.8 18.4 4.2 22 4.8 23.6 8.4 22 11.7 19.5 16.4 12 21 12 21z"/></svg>',
     bank:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 22 8H2z"/><path d="M4 10h2v9H4zm4.5 0h2v9h-2zM13 10h2v9h-2zm4.5 0H21v9h-3.5z"/><path d="M2 20h20v2H2z"/></svg>',
@@ -828,9 +925,6 @@
     }
   }
 
-  /* ====== SUB-ABAS DE "VIDA DOS SONHOS" ======
-     "life" (A Vida dos Sonhos) => categorias (viagens, leitura, saúde etc.)
-     "path" (O Caminho)        => checklist livre (tarefas diárias) */
   function switchSub(which){
     if(which === 'life'){
       subLife.classList.add('active'); subPath.classList.remove('active');
@@ -1350,62 +1444,69 @@
     showToast('Categoria criada.');
   });
 
-  /* ====== PERSISTÊNCIA (localStorage) ====== */
-  async function loadLessons(){
-    try{
-      const raw = localStorage.getItem('licoes:list');
-      lessons = raw ? JSON.parse(raw) : [];
-    }catch(e){ lessons = []; }
+  /* ====== PERSISTÊNCIA (SUPABASE) ====== */
+  async function currentUserId(){
+    const { data } = await supabase.auth.getUser();
+    return data.user.id;
   }
 
+  async function loadLessons(){
+    const uid_ = await currentUserId();
+    const { data, error } = await supabase.from('lessons').select('*').eq('user_id', uid_);
+    if(error){ console.error(error); lessons = []; return; }
+    lessons = (data || []).map(r => ({ id:r.id, text:r.text, comment:r.comment, tags:r.tags, createdAt: Number(r.created_at) }));
+  }
   async function persist(){
-    try{ localStorage.setItem('licoes:list', JSON.stringify(lessons)); }
-    catch(e){ console.error('Falha ao salvar', e); }
+    const uid_ = await currentUserId();
+    await supabase.from('lessons').delete().eq('user_id', uid_);
+    if(lessons.length){
+      await supabase.from('lessons').insert(
+        lessons.map(l => ({ id:l.id, user_id:uid_, text:l.text, comment:l.comment, tags:l.tags, created_at:l.createdAt }))
+      );
+    }
   }
 
   async function loadIdeas(){
-    try{
-      const raw = localStorage.getItem('licoes:dreams-life');
-      ideas = raw ? JSON.parse(raw) : [];
-    }catch(e){ ideas = []; }
+    const uid_ = await currentUserId();
+    const { data, error } = await supabase.from('ideas').select('*').eq('user_id', uid_);
+    if(error){ console.error(error); ideas = []; return; }
+    ideas = (data || []).map(r => ({ id:r.id, text:r.text, done:r.done, createdAt: Number(r.created_at) }));
   }
-
   async function persistIdeas(){
-    try{ localStorage.setItem('licoes:dreams-life', JSON.stringify(ideas)); }
-    catch(e){ console.error('Falha ao salvar caminho', e); }
+    const uid_ = await currentUserId();
+    await supabase.from('ideas').delete().eq('user_id', uid_);
+    if(ideas.length){
+      await supabase.from('ideas').insert(
+        ideas.map(i => ({ id:i.id, user_id:uid_, text:i.text, done:i.done, created_at:i.createdAt }))
+      );
+    }
   }
 
   async function loadCategories(){
-    try{
-      const raw = localStorage.getItem('licoes:dreams-path');
-      const parsed = raw ? JSON.parse(raw) : defaultCategories();
-      // migra categorias antigas salvas com "emoji" para o novo set de ícones
-      categories = parsed.map(c => c.icon ? c : { ...c, icon: 'gem' });
-    }catch(e){ categories = defaultCategories(); }
+    const uid_ = await currentUserId();
+    const { data, error } = await supabase.from('categories').select('*').eq('user_id', uid_);
+    if(error){ console.error(error); categories = defaultCategories(); return; }
+    categories = (data && data.length)
+      ? data.map(c => ({ id:c.id, name:c.name, icon:c.icon, color:c.color, items:c.items||[] }))
+      : defaultCategories();
   }
-
   async function persistCategories(){
-    try{ localStorage.setItem('licoes:dreams-path', JSON.stringify(categories)); }
-    catch(e){ console.error('Falha ao salvar categorias', e); }
+    const uid_ = await currentUserId();
+    await supabase.from('categories').delete().eq('user_id', uid_);
+    await supabase.from('categories').insert(
+      categories.map(c => ({ id:c.id, user_id:uid_, name:c.name, icon:c.icon, color:c.color, items:c.items }))
+    );
   }
 
   async function loadLayout(){
-    try{
-      const raw = localStorage.getItem('licoes:widget-layout');
-      widgetLayout = raw ? JSON.parse(raw) : null;
-    }catch(e){ widgetLayout = null; }
+    const uid_ = await currentUserId();
+    const { data, error } = await supabase.from('widget_layout').select('layout').eq('user_id', uid_).maybeSingle();
+    if(error){ console.error(error); widgetLayout = null; return; }
+    widgetLayout = data ? data.layout : null;
   }
-
   async function persistLayout(layout){
-    try{ localStorage.setItem('licoes:widget-layout', JSON.stringify(layout)); }
-    catch(e){ console.error('Falha ao salvar layout', e); }
-  }
-
-  async function loadOrder(){
-    try{
-      const raw = localStorage.getItem('licoes:widget-order');
-      widgetOrder = raw ? JSON.parse(raw) : null;
-    }catch(e){ widgetOrder = null; }
+    const uid_ = await currentUserId();
+    await supabase.from('widget_layout').upsert({ user_id: uid_, layout });
   }
 
   /* ====== AÇÕES: LIÇÕES ====== */
@@ -1428,12 +1529,6 @@
   }
 
   saveBtn.addEventListener('click', saveLesson);
-
-  /* ====== INICIALIZAÇÃO ====== */
-  (async function init(){
-    await Promise.all([loadLessons(), loadOrder(), loadIdeas(), loadCategories(), loadLayout()]);
-    renderDashboard();
-  })();
 })();
 </script>
 

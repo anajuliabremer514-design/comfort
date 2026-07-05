@@ -127,30 +127,29 @@
 .widget:hover .glyph-sm{ background: var(--accent-soft); color: var(--accent); }
 .widget .quote{ font-size: 14.5px; line-height: 1.4; font-weight: 600; color: var(--ink); }
 
-  /* Widgets coloridos — preenchimento sólido, saturado, texto branco (estilo Live Activity) */
-.widget[data-color="blue"]{ background: var(--c-blue); }
-.widget[data-color="purple"]{ background: var(--c-purple); }
-.widget[data-color="green"]{ background: var(--c-green); }
-.widget[data-color="orange"]{ background: var(--c-orange); }
-.widget[data-color="pink"]{ background: var(--c-pink); }
-.widget[data-color="dark"]{ background: var(--c-dark); }
+  .widget[data-color="blue"]{ background: var(--c-blue); }
+  .widget[data-color="purple"]{ background: var(--c-purple); }
+  .widget[data-color="green"]{ background: var(--c-green); }
+  .widget[data-color="orange"]{ background: var(--c-orange); }
+  .widget[data-color="pink"]{ background: var(--c-pink); }
+  .widget[data-color="dark"]{ background: var(--c-dark); }
 
-.widget[data-color="blue"] .label, .widget[data-color="blue"] .quote, .widget[data-color="blue"] .big,
-.widget[data-color="purple"] .label, .widget[data-color="purple"] .quote, .widget[data-color="purple"] .big,
-.widget[data-color="green"] .label, .widget[data-color="green"] .quote, .widget[data-color="green"] .big,
-.widget[data-color="orange"] .label, .widget[data-color="orange"] .quote, .widget[data-color="orange"] .big,
-.widget[data-color="pink"] .label, .widget[data-color="pink"] .quote, .widget[data-color="pink"] .big,
-.widget[data-color="dark"] .label, .widget[data-color="dark"] .quote, .widget[data-color="dark"] .big{
-  color: #ffffff;
-}
-.widget[data-color="blue"] .label, .widget[data-color="purple"] .label, .widget[data-color="green"] .label,
-.widget[data-color="orange"] .label, .widget[data-color="pink"] .label, .widget[data-color="dark"] .label{
-  color: rgba(255,255,255,0.72);
-}
-.widget[data-color="blue"] .glyph-sm, .widget[data-color="purple"] .glyph-sm, .widget[data-color="green"] .glyph-sm,
-.widget[data-color="orange"] .glyph-sm, .widget[data-color="pink"] .glyph-sm, .widget[data-color="dark"] .glyph-sm{
-  background: rgba(255,255,255,0.16); color:#fff;
-}
+  .widget[data-color="blue"] .label, .widget[data-color="blue"] .quote, .widget[data-color="blue"] .big,
+  .widget[data-color="purple"] .label, .widget[data-color="purple"] .quote, .widget[data-color="purple"] .big,
+  .widget[data-color="green"] .label, .widget[data-color="green"] .quote, .widget[data-color="green"] .big,
+  .widget[data-color="orange"] .label, .widget[data-color="orange"] .quote, .widget[data-color="orange"] .big,
+  .widget[data-color="pink"] .label, .widget[data-color="pink"] .quote, .widget[data-color="pink"] .big,
+  .widget[data-color="dark"] .label, .widget[data-color="dark"] .quote, .widget[data-color="dark"] .big{
+    color: #ffffff;
+  }
+  .widget[data-color="blue"] .label, .widget[data-color="purple"] .label, .widget[data-color="green"] .label,
+  .widget[data-color="orange"] .label, .widget[data-color="pink"] .label, .widget[data-color="dark"] .label{
+    color: rgba(255,255,255,0.72);
+  }
+  .widget[data-color="blue"] .glyph-sm, .widget[data-color="purple"] .glyph-sm, .widget[data-color="green"] .glyph-sm,
+  .widget[data-color="orange"] .glyph-sm, .widget[data-color="pink"] .glyph-sm, .widget[data-color="dark"] .glyph-sm{
+    background: rgba(255,255,255,0.16); color:#fff;
+  }
 
 .widget-palette-btn{
   position: absolute; top: 8px; right: 8px;
@@ -188,7 +187,6 @@
   .widget{ position: static !important; width: 100% !important; height: auto !important; min-height: 100px; }
 }
 
-  /* ===== LIÇÕES — HEADER COM LÁPIS ===== */
   .lessons-header{
     display:flex; align-items:center; justify-content:space-between;
     margin-bottom: 28px;
@@ -417,7 +415,6 @@
   #ideaInput::placeholder{ color: var(--ink-mute); }
   #ideaInput:focus{ outline: none; }
 
-  /* ===== O CAMINHO — CATEGORIAS ===== */
   .cats-list{
     display: flex;
     flex-direction: column;
@@ -609,7 +606,6 @@
 </head>
 <body>
 
-<!-- ===== TELA DE LOGIN / CADASTRO ===== -->
 <div id="authScreen" class="app" style="max-width:420px;">
   <header>
     <span class="eyebrow">Diário pessoal</span>
@@ -632,7 +628,6 @@
   </div>
 </div>
 
-<!-- ===== APP PRINCIPAL (escondido até logar) ===== -->
 <div id="mainApp" style="display:none;">
 <div class="app">
   <div class="header-row">
@@ -752,12 +747,10 @@
 
 <script>
 (function(){
-  /* ====== SUPABASE ====== */
   const SUPABASE_URL = 'https://worlrourheyncukbfrkl.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_K8R1jqY7JDWvPR1Rl8YIFQ_ImFG5xO4';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  /* ====== REFERÊNCIAS DOM — AUTH ====== */
   const authScreen = document.getElementById('authScreen');
   const mainApp = document.getElementById('mainApp');
   const authEmail = document.getElementById('authEmail');
@@ -786,18 +779,42 @@
     if(!email || !password){ authError.textContent = 'Preencha e-mail e senha.'; return; }
 
     authSubmitBtn.disabled = true;
-    const { data, error } = isSignup
-      ? await supabase.auth.signUp({ email, password })
-      : await supabase.auth.signInWithPassword({ email, password });
+
+    if(isSignup){
+      const { data, error } = await supabase.auth.signUp({ email, password });
+
+      if(error){
+        authSubmitBtn.disabled = false;
+        authError.textContent = error.message;
+        return;
+      }
+
+      // Se já veio com sessão (confirmação de e-mail desativada), entra direto.
+      if(data.session){
+        authSubmitBtn.disabled = false;
+        startApp();
+        return;
+      }
+
+      // Tenta logar imediatamente em seguida ao cadastro (passa direto sem esperar e-mail).
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+      authSubmitBtn.disabled = false;
+
+      if(loginError || !loginData.session){
+        // Só cai aqui se a confirmação de e-mail estiver realmente obrigatória no projeto Supabase.
+        authError.style.color = '#0a84ff';
+        authError.textContent = 'Conta criada! Verifique seu e-mail para confirmar antes de entrar.';
+        return;
+      }
+
+      startApp();
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     authSubmitBtn.disabled = false;
 
     if(error){ authError.textContent = error.message; return; }
-
-    if(isSignup && !data.session){
-      authError.style.color = '#0a84ff';
-      authError.textContent = 'Verifique seu e-mail para confirmar o cadastro.';
-      return;
-    }
     startApp();
   });
 
@@ -821,7 +838,6 @@
     else authScreen.style.display = 'block';
   });
 
-  /* ====== REFERÊNCIAS DOM — APP ====== */
   const tabHome = document.getElementById('tabHome');
   const tabList = document.getElementById('tabList');
   const tabDreams = document.getElementById('tabDreams');
@@ -854,13 +870,11 @@
   const saveCatBtn = document.getElementById('saveCatBtn');
   const cancelCatBtn = document.getElementById('cancelCatBtn');
 
-  /* ====== ESTADO ====== */
   let lessons = [];
   let ideas = [];
   let categories = [];
   let widgetLayout = null;
 
-  /* ====== ÍCONES ====== */
   const ICONS = {
     heart:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.4 2 4.8 5.6 4.2 8 3.8 10 5 12 7.4 14 5 16 3.8 18.4 4.2 22 4.8 23.6 8.4 22 11.7 19.5 16.4 12 21 12 21z"/></svg>',
     bank:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 22 8H2z"/><path d="M4 10h2v9H4zm4.5 0h2v9h-2zM13 10h2v9h-2zm4.5 0H21v9h-3.5z"/><path d="M2 20h20v2H2z"/></svg>',
@@ -894,7 +908,6 @@
     setTimeout(()=> toast.classList.remove('show'), 1800);
   }
 
-  /* ====== NAVEGAÇÃO ENTRE ABAS ====== */
   const tabs = {
     home:   [tabHome, viewHome],
     list:   [tabList, viewList],
@@ -949,7 +962,6 @@
     saveBtn.disabled = lessonInput.value.trim().length === 0;
   });
 
-  /* ====== HELPERS ====== */
   function formatDate(ts){
     const d = new Date(ts);
     return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
@@ -966,7 +978,6 @@
     return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
   }
 
-  /* ====== VIEW "LIÇÕES" ====== */
   function render(){
     lessonsList.innerHTML = '';
     if(lessons.length === 0){
@@ -999,7 +1010,6 @@
     });
   }
 
-  /* ====== VIEW "INÍCIO" — DASHBOARD LIVRE ====== */
   const widgetDefs = [
     { id: 'hoje', render: renderDateWidget },
     { id: 'ultima', render: renderLastWidget },
@@ -1124,7 +1134,6 @@
     renderDashboard();
   }
 
-  /* ---- Drag livre (mouse + touch) ---- */
   let wasDragged = false;
 
   function makeDraggable(el, id){
@@ -1184,7 +1193,6 @@
     el.addEventListener('touchstart', onDown, { passive: true });
   }
 
-  /* ====== SUB-VIEW "O CAMINHO" — CHECKLIST DIÁRIO ====== */
   function renderIdeas(){
     const container = document.getElementById('ideasList');
     const empty = document.getElementById('ideasEmpty');
@@ -1257,7 +1265,6 @@
     input.value = '';
   });
 
-  /* ====== SUB-VIEW "A VIDA DOS SONHOS" — CATEGORIAS ====== */
   let openCatIds = new Set();
 
   function renderCategories(){
@@ -1380,7 +1387,6 @@
     renderCategories();
   }
 
-  /* ---- Formulário de nova categoria ---- */
   let selectedIcon = ICON_KEYS[0];
   let selectedColor = COLORS[0];
 
@@ -1444,7 +1450,6 @@
     showToast('Categoria criada.');
   });
 
-  /* ====== PERSISTÊNCIA (SUPABASE) ====== */
   async function currentUserId(){
     const { data } = await supabase.auth.getUser();
     return data.user.id;
@@ -1509,7 +1514,6 @@
     await supabase.from('widget_layout').upsert({ user_id: uid_, layout });
   }
 
-  /* ====== AÇÕES: LIÇÕES ====== */
   async function saveLesson(){
     const text = lessonInput.value.trim();
     if(!text) return;
